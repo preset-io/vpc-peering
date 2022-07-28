@@ -2,7 +2,7 @@
 
 Terraform module which creates a peering connection between any two VPCs existing in different AWS accounts.
 
-[![SWUbanner](./preset-logo.png)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
+[![SWUbanner](./preset-logo.svg)](https://preset.io)
 
 ## Usage
 
@@ -21,14 +21,21 @@ systematic way so that they do not catch you by surprise.
 ```terraform
 
 locals {
-  accepter_vpc_id = "vpc-id"
-  accepter_vpc_name = "accpeter name"
+  accepter_vpc_id = "<vpc-id>"
+  accepter_vpc_name = "<accpeter-vpc-name>"
 
-  requester_vpc_name = "requester account"
-  
-  # list of comma separated private route tables for requester VPC
-  requester_route_table_ids = ["rtb-0722cac0edd61951a", "rtb-0d2d08dd1978703b3", "rtb-0ff8d0084bc9e61b3"]
-  requester_vpc_id  = "vpc-id"
+  requester_vpc_name = "<requester-vpc-name"
+  requester_route_table_ids = local.infra_remote_state.vpc.private_route_table_ids
+  requester_vpc_id          = local.infra_remote_state.vpc.vpc_id
+}
+
+data "terraform_remote_state" "infra" {
+  backend = "s3"
+  config = {
+    region = "us-west-2"
+    bucket = local.infrastructure_remote_state_bucket
+    key    = local.infrastructure_remote_state_prefix
+  }
 }
 
 # Define providers for each account
@@ -51,8 +58,8 @@ provider "aws" {
 }
 
 module "vpc_peering_cross_account" {
-  source = "https://github.com/preset-io/vpc-peering?ref=1.0.0"
-  
+  source = "github.com/preset-io/vpc-peering?ref=1.0.0"
+
   providers = {
     aws.requester = aws.requester
     aws.accepter  = aws.accepter
