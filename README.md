@@ -21,6 +21,7 @@ systematic way so that they do not catch you by surprise.
 ```terraform
 
 locals {
+  region          = "<aws-region>"
   accepter_vpc_id = "<vpc-id>"
   accepter_vpc_name = "<accpeter-vpc-name>"
 
@@ -32,7 +33,7 @@ locals {
 data "terraform_remote_state" "infra" {
   backend = "s3"
   config = {
-    region = "us-west-2"
+    region = local.region
     bucket = local.infrastructure_remote_state_bucket
     key    = local.infrastructure_remote_state_prefix
   }
@@ -41,7 +42,7 @@ data "terraform_remote_state" "infra" {
 # Define providers for each account
 provider "aws" {
   alias               = "accepter"
-  region              = "us-west-2"
+  region              = "<accepter-region>"
   allowed_account_ids = ["account-id"]
   assume_role {
     role_arn = "arn:aws:iam::<account-id>:role/<role-name>"
@@ -50,8 +51,8 @@ provider "aws" {
 
 provider "aws" {
   alias               = "requester"
-  region              = "us-west-2"
-  allowed_account_ids = ["account-id"]
+  region              = "<requester-region>"
+  allowed_account_ids = ["<requester-account-id>"]
   assume_role {
     role_arn = "arn:aws:iam::<account-id>:role/<role-name>"
   }
@@ -90,8 +91,8 @@ terraform {
     key            = "/path/to/terraform/state"
     encrypt        = true
     acl            = "private"
-    region         = "us-west-2"
-    dynamodb_table = "terraform-state-lock-dynamodb"
+    region         = "<aws-region>"
+    dynamodb_table = "<terraform-state-lock-dynamodb-table>"
   }
 
   required_providers {
