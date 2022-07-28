@@ -2,7 +2,7 @@
 
 Terraform module which creates a peering connection between any two VPCs existing in different AWS accounts.
 
-[![SWUbanner](./preset-logo.svg)](https://preset.io)
+[![Preset-io](./preset-logo.svg)](https://preset.io)
 
 ## Usage
 
